@@ -6,6 +6,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,6 +25,38 @@ public class App {
 	public static void main(String[] args) {
 		Workbook wb = lerExcel();
 		String log = "";
+		String salvar = "";
+		
+		//Lista de zonas
+		Dictionary<String, String[]> zonas = new Hashtable<String, String[]>();
+		String[] tmp = {"-zone-1"};
+		zonas.put("1.006", tmp); //chute 20x15 = 300 m2 (lembrar que é pé duplo)
+		tmp = new String[]{"-zone-1","-zone-2","-zone-3"}; 
+		zonas.put("1.042", tmp); //85 m2
+		tmp = new String[]{"-zone-1","-zone-2"}; 
+		zonas.put("2.022", tmp); //101 m2
+		tmp = new String[]{"-zone-1","-zone-2","-zone-3","-zone-4"};
+		zonas.put("3.005", tmp); //202 m2
+		tmp = new String[]{"-zone-1","-zone-2","-zone-3","-zone-4","-zone-5","-zone-6","-zone-7","-zone-8","-zone-9"};
+		zonas.put("3.015", tmp); //355 m2
+		tmp = new String[]{"-zone-1","-zone-2","-zone-3","-zone-4"};
+		zonas.put("3.018", tmp); //174 m2
+		tmp = new String[]{"-zone-1", "-zone-2", "-zone-3", "-zone-4", "-zone-5", "-zone-6"};
+		zonas.put("4.005", tmp); //166 m2
+		tmp = new String[]{"-zone-1", "-zone-2", "-zone-3", "-zone-4"};
+		zonas.put("4.015", tmp); //158 m2
+		tmp = new String[]{};
+		zonas.put("4.020", tmp); //20 m2
+		tmp = new String[]{};
+		zonas.put("4.018", tmp); //62 m2
+		tmp = new String[]{"-zone-1", "-zone-2", "-zone-3", "-zone-4"};
+		zonas.put("4.022", tmp); //247 m2
+		tmp = new String[]{"-zone-1", "-zone-2"};
+		zonas.put("5.023", tmp); //85 m2
+		tmp = new String[]{};
+		zonas.put("G.003", tmp); //201 m2
+		
+		
 		
 		for(int i = 0; i < wb.getNumberOfSheets(); i++) {
 			Sheet sh = wb.getSheetAt(i);
@@ -30,7 +64,7 @@ public class App {
 			
 			if(sala == null)continue;
 			
-			log += sala + "\n";
+			//log += sala + "\n";
 			System.out.println(sala);
 			
 			//Itera em cada linha
@@ -39,39 +73,61 @@ public class App {
 				ObjectMapper objectMapper = new ObjectMapper();
 				JsonNode jsonNode = null;
 				String urlString = null;
-				try {
-					log += "\t" + celulaComDataParaString(row.getCell(0)) + " " + celulaComHoraParaString(row.getCell(1)) + ' ' + celulaComHoraParaStringMaisUm(row.getCell(1)) + " " + celularComPessoasParaInt(row.getCell(3)) + "\n";
-					System.out.println("\t" + celulaComDataParaString(row.getCell(0)) + " " + celulaComHoraParaString(row.getCell(1)) + ' ' + celulaComHoraParaStringMaisUm(row.getCell(1)) + " " + celularComPessoasParaInt(row.getCell(3)));	
-					urlString = "https://api.usb.urbanobservatory.ac.uk/api/v2/sensors/timeseries/room-" + sala + "-zone-2"
-							+ "/co2/raw/historic?startTime=" + celulaComDataParaString(row.getCell(0)) + "T" + celulaComHoraParaString(row.getCell(1)) + "Z&endTime=" + celulaComDataParaString(row.getCell(0)) + "T" + celulaComHoraParaStringMaisUm(row.getCell(1));
-					jsonNode = objectMapper.readTree(new URL(urlString));
-					log += "\t" + celulaComDataParaString(row.getCell(0)) + " " + celulaComHoraParaString(row.getCell(1)) + ' ' + celulaComHoraParaStringMaisUm(row.getCell(1)) + " " + celularComPessoasParaInt(row.getCell(3)) + " " + averageSensor(jsonNode) + "\n";
-					System.out.println("\t" + celulaComDataParaString(row.getCell(0)) + " " + celulaComHoraParaString(row.getCell(1)) + ' ' + celulaComHoraParaStringMaisUm(row.getCell(1)) + " " + celularComPessoasParaInt(row.getCell(3)) + " " + averageSensor(jsonNode));	
-				} catch (Exception e) {
-					log += "\tERRO: " + urlString + "\n";
-					System.out.println("\tERRO: " + urlString);
-				}
-								
-			}
-			/*Melhor usar o Jackson JsonNode
-			 * ObjectMapper objectMapper = new ObjectMapper();
-			Map<String, Object> map = null;
-			tWry {
-				map = objectMapper.readValue(new URL("https://api.usb.urbanobservatory.ac.uk/api/v2.0a/sensors/entity?meta:roomNumber=1.042&zone=1/co2/raw/historic?startTime=2019-11-28T00:00:00Z&endTime=2019-11-28T23:59:59"), new TypeReference<Map<String,Object>>(){});
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			System.out.println(map.get("items").toString());*/
-			
-
-			
-			
-			 
+				
+				double total = 0.0; 
+				boolean erro = false;
+				
+					//log += "\t" + celulaComDataParaString(row.getCell(0)) + " " + celulaComHoraParaString(row.getCell(1)) + ' ' + celulaComHoraParaStringMaisUm(row.getCell(1)) + " " + celularComPessoasParaInt(row.getCell(3)) + "\n";
+					//System.out.println("\t" + celulaComDataParaString(row.getCell(0)) + " " + celulaComHoraParaString(row.getCell(1)) + ' ' + celulaComHoraParaStringMaisUm(row.getCell(1)) + " " + celularComPessoasParaInt(row.getCell(3)));	
+					
+					if(zonas.get(sala).length > 0) {
+						boolean linhaSalva = true;
+						for(String s : zonas.get(sala)) {
+							try {
+								urlString = "https://api.usb.urbanobservatory.ac.uk/api/v2/sensors/timeseries/room-" + sala + s
+										+ "/co2/raw/historic?startTime=" + celulaComDataParaString(row.getCell(0)) + "T" + celulaComHoraParaString(row.getCell(1)) + "Z&endTime=" + celulaComDataParaString(row.getCell(0)) + "T" + celulaComHoraParaStringMaisUm(row.getCell(1));
+								jsonNode = objectMapper.readTree(new URL(urlString));
+								log += sala + "; "  + celulaComDataParaString(row.getCell(0)) + "; " + celulaComHoraParaString(row.getCell(1)) + "; " + celulaComHoraParaStringMaisUm(row.getCell(1)) + "; " + celularComPessoasParaInt(row.getCell(3)) + "; " + averageSensor(jsonNode) + ";\n";
+								total += averageSensor(jsonNode);
+								if(linhaSalva) {
+									linhaSalva = false;
+									salvar += sala + "; "  + celulaComDataParaString(row.getCell(0)) + "; " + celulaComHoraParaString(row.getCell(1)) + "; " + celulaComHoraParaStringMaisUm(row.getCell(1)) + "; " + celularComPessoasParaInt(row.getCell(3)) + "; ";
+								}
+								total += averageSensor(jsonNode);
+								System.out.println("\t" + celulaComDataParaString(row.getCell(0)) + " " + celulaComHoraParaString(row.getCell(1)) + ' ' + celulaComHoraParaStringMaisUm(row.getCell(1)) + " " + celularComPessoasParaInt(row.getCell(3)) + " " + s + " " + averageSensor(jsonNode));
+							} catch (Exception e) {
+								log += "\tERRO: " + urlString + "\n";
+								System.out.println("\tERRO: " + urlString);
+								erro= true;
+							}	
+						}
+					} else {
+						try {
+							urlString = "https://api.usb.urbanobservatory.ac.uk/api/v2/sensors/timeseries/room-" + sala
+									+ "/co2/raw/historic?startTime=" + celulaComDataParaString(row.getCell(0)) + "T" + celulaComHoraParaString(row.getCell(1)) + "Z&endTime=" + celulaComDataParaString(row.getCell(0)) + "T" + celulaComHoraParaStringMaisUm(row.getCell(1));
+							jsonNode = objectMapper.readTree(new URL(urlString));
+							log += sala + "; "+ celulaComDataParaString(row.getCell(0)) + "; " + celulaComHoraParaString(row.getCell(1)) + "; " + celulaComHoraParaStringMaisUm(row.getCell(1)) + "; " + celularComPessoasParaInt(row.getCell(3)) + "; " + averageSensor(jsonNode) + ";\n";
+							System.out.println("\t" + celulaComDataParaString(row.getCell(0)) + " " + celulaComHoraParaString(row.getCell(1)) + ' ' + celulaComHoraParaStringMaisUm(row.getCell(1)) + " " + celularComPessoasParaInt(row.getCell(3)) + " " + averageSensor(jsonNode));
+							salvar += sala + "; "  + celulaComDataParaString(row.getCell(0)) + "; " + celulaComHoraParaString(row.getCell(1)) + "; " + celulaComHoraParaStringMaisUm(row.getCell(1)) + "; " + celularComPessoasParaInt(row.getCell(3)) + "; ";
+							total += averageSensor(jsonNode);
+						} catch (Exception e) {
+							log += "\tERRO: " + urlString + "\n";
+							System.out.println("\tERRO: " + urlString);
+							erro= true;
+						}
+					}
+					if(!erro) salvar += total + ";\n";
+					
+					
+			}				 
 		}
 		try {
-			FileWriter myWriter = new FileWriter("resumo.txt");
+			FileWriter myWriter = new FileWriter("log.txt");
 			myWriter.write(log);
 			myWriter.close();
+			FileWriter myWriter2 = new FileWriter("consolidado.csv");
+			myWriter2.write(salvar);
+			myWriter2.close();
 			
 		}
 		catch (Exception e) {
