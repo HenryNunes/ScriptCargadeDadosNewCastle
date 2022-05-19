@@ -710,11 +710,11 @@ public class App2 {
 			if(zonas.get(sala).length > 0) {
 				for(int j = 0; j < zonas.get(sala).length; j++) {
 					String s = zonas.get(sala)[j];
-					double co2;
-					double occupancy;
-					double humidity;
-					double temperature;
-					double brightness;
+					double co2 = 0;
+					double occupancy = 0;
+					double humidity = 0;
+					double temperature = 0;
+					double brightness = 0;
 					erro = false;
 					
 					//co2
@@ -724,7 +724,7 @@ public class App2 {
 						co2 = Double.parseDouble(jsonNode.get("items").get(j).findValue("feed").findValue("timeseries").findValue("latest").findValue("value").toString());
 											
 					} catch (Exception e) {
-						co2 = 0;
+						erro=true;
 					}	
 					
 					//occupancy
@@ -736,7 +736,7 @@ public class App2 {
 							occupancy = 0;
 						}
 					} catch (Exception e) {
-						occupancy = 0;
+						erro=true;
 					}	
 					
 					//humidity
@@ -746,7 +746,7 @@ public class App2 {
 						humidity = Double.parseDouble(jsonNode.get("items").get(j).findValue("feed").findValue("timeseries").findValue("latest").findValue("value").toString());
 											
 					} catch (Exception e) {
-						humidity = 0;
+						erro=true;
 					}	
 					
 					//temperature
@@ -756,7 +756,7 @@ public class App2 {
 						temperature = Double.parseDouble(jsonNode.get("items").get(j).findValue("feed").findValue("timeseries").findValue("latest").findValue("value").toString());
 											
 					} catch (Exception e) {
-						temperature = 0;
+						erro=true;
 					}	
 					
 					//brightness
@@ -766,25 +766,25 @@ public class App2 {
 						brightness = Double.parseDouble(jsonNode.get("items").get(j).findValue("feed").findValue("timeseries").findValue("latest").findValue("value").toString());
 										
 					} catch (Exception e) {
-						brightness = 0;
+						erro=true;
 					}	
 					
 					
-					if((co2 == 0) && (occupancy == 0) && (humidity == 0) && (temperature == 0) && (brightness == 0)){
-						erro = true;
-					}
 
-					if(!erro) {
+					if(erro) {
+						System.out.println("Erro sala: " + sala);
+						log += "Erro sala: " + sala + "\n";
+					}else {
 						salvar += sala + "; "  + co2 + "; " + occupancy + "; " + humidity + "; " + temperature + "; " + brightness + "; " + "\n";
 					}
 
 				}
 			} else {
-				double co2;
-				double occupancy;
-				double humidity;
-				double temperature;
-				double brightness;
+				double co2 = 0;
+				double occupancy = 0;
+				double humidity = 0;
+				double temperature = 0;
+				double brightness = 0;
 				erro = false;
 				
 				//co2
@@ -794,7 +794,7 @@ public class App2 {
 					co2 = Double.parseDouble(jsonNode.get("items").findValue("feed").findValue("timeseries").findValue("latest").findValue("value").toString());
 
 				} catch (Exception e) {
-					co2 = 0;
+					erro = true;
 				}
 				
 				//occupancy
@@ -807,7 +807,7 @@ public class App2 {
 					}
 					
 				} catch (Exception e) {
-					occupancy = 0;
+					erro = true;
 				}
 				
 				//humidity
@@ -817,7 +817,7 @@ public class App2 {
 					humidity = Double.parseDouble(jsonNode.get("items").findValue("feed").findValue("timeseries").findValue("latest").findValue("value").toString());
 
 				} catch (Exception e) {
-					humidity = 0;
+					erro = true;
 				}
 				
 				//temperature
@@ -827,7 +827,7 @@ public class App2 {
 					temperature = Double.parseDouble(jsonNode.get("items").findValue("feed").findValue("timeseries").findValue("latest").findValue("value").toString());
 
 				} catch (Exception e) {
-					temperature = 0;
+					erro = true;
 				}
 				
 				//brightness
@@ -837,15 +837,14 @@ public class App2 {
 					brightness = Double.parseDouble(jsonNode.get("items").findValue("feed").findValue("timeseries").findValue("latest").findValue("value").toString());
 
 				} catch (Exception e) {
-					brightness = 0;
-				}
-				
-				
-				if((co2 == 0) && (occupancy == 0) && (humidity == 0) && (temperature == 0) && (brightness == 0)){
 					erro = true;
 				}
 				
-				if(!erro) {
+
+				if(erro) {
+					System.out.println("Erro sala: " + sala);
+					log += "Erro sala: " + sala + "\n";
+				}else {
 					salvar += sala + "; "  + co2 + "; " + occupancy + "; " + humidity + "; " + temperature + "; " + brightness + "; " + "\n";
 				}
 
@@ -855,7 +854,7 @@ public class App2 {
 		}				 
 		
 		try {
-			FileWriter myWriter = new FileWriter(timeStamp+"-log.txt");
+			FileWriter myWriter = new FileWriter(timeStamp+".txt");
 			myWriter.write(log);
 			myWriter.close();
 			FileWriter myWriter2 = new FileWriter(timeStamp+".csv");
