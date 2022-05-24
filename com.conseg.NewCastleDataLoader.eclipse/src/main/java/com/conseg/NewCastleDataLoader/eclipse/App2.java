@@ -1,5 +1,12 @@
 package com.conseg.NewCastleDataLoader.eclipse;
 
+import com.microsoft.azure.functions.ExecutionContext;
+import com.microsoft.azure.functions.OutputBinding;
+import com.microsoft.azure.functions.annotation.BlobOutput;
+import com.microsoft.azure.functions.annotation.FunctionName;
+import com.microsoft.azure.functions.annotation.StorageAccount;
+import com.microsoft.azure.functions.annotation.TimerTrigger;
+
 import java.io.*;
 import java.net.URL;
 import java.util.Dictionary;
@@ -12,7 +19,20 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class App2 {
-	public static void main(String[] args) {
+	@FunctionName("keepAlive")
+	@StorageAccount("DefaultEndpointsProtocol=https;AccountName=scriptco2;AccountKey=vASfl9XVdRNk2C5p830DN4DYZ3oIGw5mTZJ8R7btGVHKV85gpG0PdS9ERf1ou4k9jAV0qSlUYISbyZ+rZxnlTg==;EndpointSuffix=core.windows.net")
+    public void keepAlive(
+			@TimerTrigger(name = "keepAliveTrigger", schedule = "0 */5 * * * *") String timerInfo,
+			@BlobOutput(
+				name = "target", 
+				path = "myblob/{timestamp.csv}")
+			OutputBinding<String> outputItem,
+        	ExecutionContext context
+        ) {
+
+		//caso queira rodar local:
+
+		//while (true){
 		String log = "";
 		String salvar = "";
 		
@@ -865,6 +885,18 @@ public class App2 {
 			System.out.println("Erro salvando");
 		}
 		
+		outputItem.setValue(salvar);
+
 		System.out.println("fim");
+        context.getLogger().info("Timer is triggered: " + timerInfo);
+		//caso queira deixar rodando local
+
+		// try {
+		// 	Thread.sleep(300000);
+		// } catch (InterruptedException e) {
+		// 	// TODO Auto-generated catch block
+		// 	e.printStackTrace();
+		// }
+		//}
 	}
 }
