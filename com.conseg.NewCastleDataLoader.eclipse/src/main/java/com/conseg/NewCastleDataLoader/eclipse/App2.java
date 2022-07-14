@@ -17,8 +17,13 @@ public class App2 {
 		String salvar = "";
 		
 		String timeStamp = new SimpleDateFormat("yyyyMMdd-HHmmss").format(Calendar.getInstance().getTime());
-
+		String date = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
+		String time = new SimpleDateFormat("HHmmss").format(Calendar.getInstance().getTime());
+			
         System.out.println(timeStamp);
+        System.out.println(date);
+        System.out.println(time);
+
 		
 		//Lista de salas
 		ArrayList<String> salas = new ArrayList<String>();
@@ -808,7 +813,7 @@ public class App2 {
 						System.out.println("Erro sala: " + sala );
 						log += "Erro sala: " + sala + "\n";
 					}else {
-						salvar += sala + "; " + zone + "; "  + co2 + "; " + occupancy + "; " + humidity + "; " + temperature + "; " + brightness + "; " + "\n";
+						salvar += sala + "; " + zone + "; "  + co2 + "; " + occupancy + "; " + humidity + "; " + temperature + "; " + brightness + "; " + date +"; " + time + "; " + "\n";
 					}
 				}
 				
@@ -882,7 +887,7 @@ public class App2 {
 					System.out.println("Erro sala: " + sala);
 					log += "Erro sala: " + sala + "\n";
 				}else {
-					salvar += sala + "; " + 0 + "; " + co2 + "; " + occupancy + "; " + humidity + "; " + temperature + "; " + brightness + "; " + "\n";
+					salvar += sala + "; " + 0 + "; " + co2 + "; " + occupancy + "; " + humidity + "; " + temperature + "; " + brightness + "; " + date +"; " + time + "; " + "\n";
 				}
 			}
 		}				 
